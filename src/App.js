@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {Box, Text, Checkbox, CheckboxGroup, Stack, Grid, GridItem, Flex, Button} from '@chakra-ui/react';
-// import Ticket from './Ticket';
+import Ticket from './Ticket';
 function App() {
   let navbgColor = '#2196F3';
   let navtxtColor = '#FFFFFF';
@@ -45,15 +45,17 @@ function App() {
         })
       }, [haveSearchId])
   
-      function sortByPriceFunc(){
-        alert('sorted')
+      function sortByFunc(type){
+        const types = {
+          price: "price",
+          duration: "duration",
+          change: "change"
       }
-      // useEffect(()=>{
-      //   datas = datas.map(str=>{
-      //         if(datas[datas.indexOf(str)].price > datas[datas.indexOf(str)+1].price ){
-      //           [datas[datas.indexOf(str)].price, datas[datas.indexOf(str)+1].price] = [datas[datas.indexOf(str)+1].price, datas[datas.indexOf(str)].price]
-      //         }
-      // })}, [sortByPrice]) 
+        alert('sorted')
+        const sortProperty = types[type];
+       const sorted = [...datas].sort((a, b)=>a[sortProperty]-b[sortProperty])
+        setData(sorted);
+      }
       if(error){
         return <div>Error: {error.message}</div>
       } else if(!isLoading){
@@ -81,13 +83,13 @@ function App() {
                 <Flex borderWidth='2' w='100%' >
                   <Grid align='center'  templateColumns='repeat(3, 1fr)' w='100%'>
                     <GridItem h='12' color={navtxtColor} colSpan={1} bg={navbgColor}>
-                      <Button bg="none" onClick={sortByPriceFunc} >Самый дешевый</Button>
+                      <Button bg="none" value="price" onClick={(e)=>sortByFunc(e.target.value)} >Самый дешевый</Button>
                     </GridItem>
                     <GridItem colSpan={1}>
-                      <Text>Самый быстрый</Text>
+                      <Button value="duration" onClick={(e)=>sortByFunc(e.target.value)}>Самый быстрый</Button>
                     </GridItem>
                     <GridItem colSpan={1}>
-                      <Text>Оптимальный</Text>
+                      <Button value="change" onClick={(e)=>sortByFunc(e.target.value)}>Оптимальный</Button>
                     </GridItem>
                   </Grid>
                 </Flex>   
@@ -95,65 +97,8 @@ function App() {
             </Grid>
          {datas.sort((a,b)=>a.price-b.price).slice(0, showMore).map(data=>{
              return( 
-                  // <NewTicket data={data} id={datas.indexOf(data)} key={datas.indexOf(data)} /> );
-              <Box key={datas.indexOf(data)} colSpan={3} mt='5' borderWidth='2' borderRadius="lg" w='55%' align='left' float='right' mr='100px' boxShadow='md' bg='white' rowSpan={3}>
-                <Grid templateRows='repeat(3, 1fr)' mx="auto">
-                    <GridItem rowSpan={1}>
-                      <Text fontSize='22px' ml="30px" mt="20px" align='left'>{data.price}</Text>
-                      <Text fontSize='22px' mr="30px" mb="20px" align='right'>Avialines</Text>
-                    </GridItem>
-                    <GridItem rowSpan={2}>
-                      <Grid templateColumns='repeat(3, 1fr)'>
-                        <GridItem colSpan={1} ml="30px">
-                          <Text>{data.segments[0].origin} - {data.segments[0].destination}</Text>
-                          <Flex fontWeight='700'>
-                            <Text>{data.segments[0].date.slice(11, 16)}</Text>&nbsp;-&nbsp; <Text>{parseInt((((data.segments[0].date.slice(11, 19).split(":")[0]*60+data.segments[0].date.slice(11, 19).split(":")[1]*1) + data.segments[0].duration)/60)%24)}:{((data.segments[0].date.slice(11, 19).split(":")[0]*60+data.segments[0].date.slice(11, 19).split(":")[1]*1) + data.segments[0].duration)%60}</Text>  
-                          </Flex>
-                          {/* <Box fontSize="xx-small">
-                            <Text>{data.segments[0].date}</Text>   
-                            <Text>Duration : {parseFloat(data.segments[0].duration)}</Text>   
-                          </Box> */}
-                          
-                          <Text mt="10px">{data.segments[1].origin} - {data.segments[1].destination}</Text>
-                          <Flex fontWeight='700'>
-                            <Text>
-                              {data.segments[1].date.slice(11, 16)}
-                            </Text>
-                            &nbsp;-&nbsp; 
-                            <Text>
-                              { parseInt((((data.segments[1].date.slice(11, 19).split(":")[0]*60+data.segments[1].date.slice(11, 19).split(":")[1]*1) + data.segments[1].duration)/60)%24)}:{((data.segments[1].date.slice(11, 19).split(":")[0]*60+data.segments[1].date.slice(11, 19).split(":")[1]*1) + data.segments[1].duration)%60}
-                            </Text>  
-                          </Flex>
-                          {/* <Box fontSize="xx-small">
-                            <Text>{data.segments[1].date}</Text>   
-                            <Text>Duration : {parseFloat(data.segments[1].duration)}</Text>   
-                          </Box> */}
-                        </GridItem>
-                        <GridItem colSpan={1} ml="30px">
-                          <Text>В ПУТИ</Text>
-                          <Text fontWeight="700">{parseInt(data.segments[0].duration/60)}ч&nbsp;{data.segments[0].duration%60}м</Text>
-                          <Text  mt="10px">В ПУТИ</Text>
-                          <Text fontWeight="700">{parseInt(data.segments[1].duration/60)}ч&nbsp;{data.segments[1].duration%60}м</Text>
-                        </GridItem>
-                        <GridItem colSpan={1} ml="30px">
-                          <Text>{data.segments[0].stops.length} ПЕРЕСАДОК</Text>
-                          <Flex fontWeight="700">
-                            {data.segments[0].stops.map(stop=>{
-                              return <Text key={data.segments[0].stops.indexOf(stop)}>{stop}&nbsp;</Text>
-                            })}
-                          </Flex>
-                          <Text  mt="10px">{data.segments[1].stops.length} ПЕРЕСАДОК</Text>
-                          <Flex fontWeight="700">
-                            {data.segments[1].stops.map(stop => {
-                              return <Text key={data.segments[1].stops.indexOf(stop)}>{stop}&nbsp;</Text>
-                            })}
-                          </Flex>
-                        </GridItem>
-                      </Grid>
-                    </GridItem>
-                  </Grid>
-                </Box>
-             )})}
+                  <Ticket {...data} key={datas.indexOf(data)} /> );         
+             })}
             <Button type="submit" onClick={()=>{setShowMore(showMore+5)}}>Show More</Button>
           </Box>
         );
